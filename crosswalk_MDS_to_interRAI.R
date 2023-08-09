@@ -135,7 +135,7 @@ verify_transformability <- function(icodes, crosswalk, variables) {
     if (!(icode %in% crosswalk$icode)) {
       "crosswalk not found"
     } else {
-      required_vars <- stringr::str_split(
+      required_vars <- stringr::str_split(   # TODO: Replace by helper function
         crosswalk$mds_var[crosswalk$icode == icode],
         pattern = "\\s*,\\s*", 
         simplify = TRUE)
@@ -220,4 +220,18 @@ perform_recode <- function(var, recoding, data) {
 #
 perform_transformation <- function(transformation, data) {
   dplyr::transmute(data, eval(rlang::parse_expr(transformation)))[[1]]
+}
+
+# Function required_mds_variables()
+# TODO: DOCUMENTATION
+required_mds_variables <- function(icodes, crosswalk, icode_column = 1, mds_column = 4) {
+  unlist(sapply(icodes, required_mds_variables_for_icode, crosswalk, icode_column, mds_column))
+}
+
+# Function required_mds_variables_for_icode()
+# TODO: DOCUMENTATION
+required_mds_variables_for_icode <- function(icode, crosswalk, icode_column, mds_column) {
+  stringr::str_split(crosswalk[crosswalk[[icode_column]] == icode, mds_column],
+    pattern = "\\s*,\\s*", 
+    simplify = TRUE)
 }
